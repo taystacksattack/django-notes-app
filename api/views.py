@@ -50,6 +50,24 @@ def getNotes(request):
 
 @api_view(['GET'])
 def getNote(request, pk):
-    notes = Note.objects.get(id=pk)
-    serializer = NoteSerializer(notes, many=False) #many is to specify if it's getting multiple objects or not
+    note = Note.objects.get(id=pk)
+    serializer = NoteSerializer(note, many=False) #many is to specify if it's getting multiple objects or not
     return Response(serializer.data)
+
+@api_view(['PUT'])
+def updateNote(request, pk):
+    data = request.data
+    note = Note.objects.get(id=pk)
+    serializer = NoteSerializer(instance=note, data=data)
+
+    if serializer.is_valid(): #makes sure that the data adheres to the model.
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def deleteNote(request, pk):
+    note = Note.objects.get(id=pk)
+    note.delete() #simply removes entry from the database
+    return Response("Note was deleted!")
